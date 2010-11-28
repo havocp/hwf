@@ -1,0 +1,39 @@
+check_PROGRAMS += hwf-trucov
+
+hwf_trucov_CPPFLAGS = -DVERSION=\"HWF-INTERNAL\" -I$(top_srcdir)/deps/trucov
+hwf_trucov_LDFLAGS =	-lboost_program_options-mt	\
+	       	     	-lboost_filesystem-mt		\
+		       	-lboost_thread-mt		\
+		       	-lboost_regex-mt
+
+hwf_trucov_SOURCES =				\
+	deps/trucov/command.cpp			\
+	deps/trucov/command.h			\
+	deps/trucov/config.cpp			\
+	deps/trucov/config.h			\
+	deps/trucov/coverage_creator.cpp	\
+	deps/trucov/coverage_creator.h		\
+	deps/trucov/dot_creator.cpp		\
+	deps/trucov/dot_creator.h		\
+	deps/trucov/gcda_actors.h		\
+	deps/trucov/gcda_grammar.h		\
+	deps/trucov/gcno_actors.h		\
+	deps/trucov/gcno_grammar.h		\
+	deps/trucov/main.cpp			\
+	deps/trucov/parser_builder.cpp		\
+	deps/trucov/parser_builder.h		\
+	deps/trucov/parser.cpp			\
+	deps/trucov/parser.h			\
+	deps/trucov/prims.h			\
+	deps/trucov/record.cpp			\
+	deps/trucov/record.h			\
+	deps/trucov/revision_script_manager.cpp	\
+	deps/trucov/revision_script_manager.h	\
+	deps/trucov/selector.cpp		\
+	deps/trucov/selector.h			\
+	deps/trucov/source_file.h		\
+	deps/trucov/tru_utility.cpp		\
+	deps/trucov/tru_utility.h
+
+EXTRA_DIST += \
+	deps/trucov/COPYING

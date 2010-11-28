@@ -1,0 +1,18 @@
+libev
+   revision 1.181
+   date: 2010-07-09 16:55:14 -0400;  author: root;  state: Exp;  lines: +1 -0;
+
+trucov
+  r19 | william.reinhardt | 2010-04-12 13:44:09 -0400 (Mon, 12 Apr 2010) | 2 lines
+
+http-parser
+  commit cbb194ea8cdf8e4b26ee4f59c0b72f5c96a85c15
+  Author: Ben Noordhuis <info@bnoordhuis.nl>
+  Date:   Fri Aug 27 14:20:58 2010 +0200
+
+spidermonkey
+  changeset:   52418:d8674093f355
+  parent:      52413:100bcacdbf45
+  user:        Justin Lebar <justin.lebar@gmail.com>
+  date:        Fri Sep 10 13:49:57 2010 -0700
+  summary:     Backed out changeset 100bcacdbf45 due to orange (bug 578880).

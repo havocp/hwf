@@ -1,0 +1,44 @@
+# ignore entire "build" directory
+/build
+
+# build artifacts are ignored only in toplevel, or 
+# else by the rule to ignore the entire "build" dir
+/*.la
+/*.lo
+/*.o
+/*.gir
+/*.typelib
+/.deps/
+/.libs/
+/INSTALL
+/Makefile
+/Makefile.in
+/aclocal.m4
+/autom4te.cache
+/compile
+/config.guess
+/config.h
+/config.h.in
+/config.log
+/config.status
+/config.sub
+/configure
+/config
+/depcomp
+/install-sh
+/libtool
+/ltmain.sh
+/missing
+/stamp-h1
+/m4/libtool.m4
+/m4/ltoptions.m4
+/m4/ltsugar.m4
+/m4/ltversion.m4
+/m4/lt~obsolete.m4
+
+# backup files
+*~
+
+# stuff in spidermonkey
+/deps/spidermonkey/configure
+

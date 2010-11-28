@@ -1,0 +1,13 @@
+TESTS += $(wildcard $(top_srcdir)/test/http-parser/*.sh)
+EXTRA_DIST += $(wildcard $(top_srcdir)/test/http-parser/*.sh)
+
+check_PROGRAMS += 		\
+	test-http-parser-upstream
+
+test_http_parser_upstream_CFLAGS = -I $(top_srcdir)/deps/http-parser
+test_http_parser_upstream_LDFLAGS =
+
+test_http_parser_upstream_SOURCES =		\
+	deps/http-parser/test.c			\
+	deps/http-parser/http_parser.c		\
+	deps/http-parser/http_parser.h

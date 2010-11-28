@@ -1,0 +1,18 @@
+#0  0x00f46422 in __kernel_vsyscall ()
+#1  0x008fb651 in *__GI_raise (sig=6) at ../nptl/sysdeps/unix/sysv/linux/raise.c:64
+#2  0x008fea82 in *__GI_abort () at abort.c:92
+#3  0x00829fa3 in g_assertion_message (domain=0x0, file=0xce9270 "../src/lib/hio/hio-output-stream.c", line=335, func=0xce9494 "hio_output_stream_dispose", 
+    message=0xb4f81200 "assertion failed: (g_queue_get_length(&stream->buffers) == 0)") at gtestutils.c:1358
+#4  0x0082a5dd in g_assertion_message_expr (domain=0x0, file=0xce9270 "../src/lib/hio/hio-output-stream.c", line=335, func=0xce9494 "hio_output_stream_dispose", 
+    expr=0xce92dc "g_queue_get_length(&stream->buffers) == 0") at gtestutils.c:1369
+#5  0x00ce63ea in hio_output_stream_dispose (object=0x8ee66d0) at ../src/lib/hio/hio-output-stream.c:335
+#6  0x00508b97 in g_object_unref (_object=0x8ee66d0) at gobject.c:2658
+#7  0x08049834 in write_task_data_free (data=0x8ee7400) at ../test/lib/test-output.c:321
+#8  0x00abf48d in _hrt_watcher_dnotify_callback (watcher=0x0) at ../src/lib/hrt/hrt-watcher.c:93
+#9  0x00abf7d2 in _hrt_watcher_detach (watcher=0x8ee4f20) at ../src/lib/hrt/hrt-watcher.c:101
+#10 0x00abf8a8 in on_watcher_removed (task=0x8ee3c68, flags=HRT_WATCHER_FLAG_NONE, data=0x8ee4f20) at ../src/lib/hrt/hrt-watcher.c:175
+#11 0x00abe7b5 in invoke_pool_handle_item (thread_data=0x8edaf58, pushed_item=0x8ee3150, pool_data=0x8edc820) at ../src/lib/hrt/hrt-task-runner.c:683
+#12 0x00abf381 in hrt_thread_pool_thread (data=0x8ede600) at ../src/lib/hrt/hrt-thread-pool.c:137
+#13 0x0082cf7f in g_thread_create_proxy (data=0x8edd798) at gthread.c:1897
+#14 0x00b6096e in start_thread (arg=0xb6022b70) at pthread_create.c:300
+#15 0x0099ea4e in clone () at ../sysdeps/unix/sysv/linux/i386/clone.S:130

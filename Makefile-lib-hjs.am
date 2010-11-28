@@ -1,0 +1,107 @@
+shlib_PROGRAMS += libhjs.so.0.0.0
+nodist_noinst_DATA += libhjs.so.0 libhjs.so
+
+libhjs.so.0 libhjs.so: libhjs.so.0.0.0
+	$(AM_V_GEN) ln -fs libhjs.so.0.0.0 $@
+
+hjs-install-data-hook:
+	ln -fs libhjs.so.0.0.0 $(DESTDIR)$(shlibdir)/libhjs.so.0
+	ln -fs libhjs.so.0.0.0 $(DESTDIR)$(shlibdir)/libhjs.so
+
+hjs-uninstall-hook:
+	rm -f $(DESTDIR)$(shlibdir)/libhjs.so.0
+	rm -f $(DESTDIR)$(shlibdir)/libhjs.so
+
+HJS_NONBUILT_H=					\
+	src/lib/hjs/hjs-runtime.h		\
+	src/lib/hjs/hjs-runtime-spidermonkey.h	\
+	src/lib/hjs/hjs-script.h		\
+	src/lib/hjs/hjs-script-spidermonkey.h	\
+	src/lib/hjs/hjs-spidermonkey-private.h
+
+HJS_NONBUILT_C=					\
+	src/lib/hjs/hjs-runtime.c		\
+	src/lib/hjs/hjs-runtime-spidermonkey.c	\
+	src/lib/hjs/hjs-script.c		\
+	src/lib/hjs/hjs-script-spidermonkey.c	\
+	src/lib/hjs/hjs-spidermonkey-private.c
+
+hjsincludedir=$(pkgincludedir)/hjs
+hjsinclude_HEADERS = 					\
+	$(HJS_NONBUILT_H)
+
+nodist_hjsinclude_HEADERS = 				\
+	$(BUILT_INCLUDE_HJS_DIR)/hjs-builtins.h
+
+
+libhjs_so_0_0_0_CFLAGS = $(HJS_CFLAGS) $(SPIDERMONKEY_INCLUDE_FLAGS)
+libhjs_so_0_0_0_LDFLAGS = $(AM_LDFLAGS) -Wl,-soname=libhjs.so.0 $(HJS_LIBS)
+libhjs_so_0_0_0_LDADD = $(builddir)/libhwfjs.so $(builddir)/libhrt.so.0
+libhjs_so_0_0_0_SOURCES =				\
+	$(HJS_NONBUILT_H)				\
+	$(HJS_NONBUILT_C)
+
+nodist_libhjs_so_0_0_0_SOURCES =			\
+	$(BUILT_INCLUDE_HJS_DIR)/hjs-marshalers.h	\
+	$(BUILT_SRC_DIR)/hjs-marshalers.c		\
+	$(BUILT_SRC_DIR)/hjs-builtins.c
+
+CLEANFILES +=					\
+	libhjs.so.0				\
+	libhjs.so
+
+################## Builtins
+
+HJS_FILES_TO_ENUM_SCAN = 			\
+	$(HJS_NONBUILT_H)
+
+BUILT_INCLUDE_HJS_DIR=$(BUILT_INCLUDE_DIR)/hjs
+
+$(BUILT_INCLUDE_HJS_DIR)/hjs-builtins.h: $(top_srcdir)/src/lib/hjs/builtins.h.template $(HJS_FILES_TO_ENUM_SCAN)
+	$(AM_V_GEN)															     \
+	test -d $(BUILT_INCLUDE_HJS_DIR) || mkdir -p $(BUILT_INCLUDE_HJS_DIR) ;								     \
+	DIR=`pwd` ;															     \
+	cd $(abs_top_srcdir) ;														     \
+	$(GLIB_MKENUMS) --template src/lib/hjs/builtins.h.template $(HJS_FILES_TO_ENUM_SCAN) > $$DIR/$(BUILT_INCLUDE_HJS_DIR)/hjs-builtins.h
+
+$(BUILT_SRC_DIR)/hjs-builtins.c: $(top_srcdir)/src/lib/hjs/builtins.c.template $(HJS_FILES_TO_ENUM_SCAN)
+	$(AM_V_GEN)														     \
+	test -d $(BUILT_SRC_DIR) || mkdir -p $(BUILT_SRC_DIR) ;									     \
+	DIR=`pwd` ;														     \
+	cd $(abs_top_srcdir) ;													     \
+	$(GLIB_MKENUMS) --template src/lib/hjs/builtins.c.template $(HJS_FILES_TO_ENUM_SCAN) > $$DIR/$(BUILT_SRC_DIR)/hjs-builtins.c
+
+EXTRA_DIST +=					\
+	src/lib/hjs/builtins.h.template		\
+	src/lib/hjs/builtins.c.template
+
+HJS_GENERATED_BUILTINS_FILES =			\
+	$(BUILT_INCLUDE_HJS_DIR)/hjs-builtins.h	\
+	$(BUILT_SRC_DIR)/hjs-builtins.c
+
+BUILT_SOURCES +=				        \
+	$(HJS_GENERATED_BUILTINS_FILES)
+
+CLEANFILES +=					        \
+	$(HJS_GENERATED_BUILTINS_FILES)
+
+################## Marshalers
+
+$(BUILT_SRC_DIR)/hjs-marshalers.c: src/lib/hjs/marshalers.list
+	$(AM_V_GEN)								\
+	test -d $(BUILT_SRC_DIR) || mkdir -p $(BUILT_SRC_DIR) ;			\
+	$(GLIB_GENMARSHAL) $< --prefix=_hjs_marshal --header --body > $@.tmp &&	\
+	mv $@.tmp $@
+
+$(BUILT_INCLUDE_HJS_DIR)/hjs-marshalers.h: src/lib/hjs/marshalers.list
+	$(AM_V_GEN)								\
+	test -d $(BUILT_INCLUDE_HJS_DIR) || mkdir -p $(BUILT_INCLUDE_HJS_DIR) ;		\
+	$(GLIB_GENMARSHAL) $< --prefix=_hjs_marshal --header > $@.tmp &&	\
+	mv $@.tmp $@
+
+BUILT_SOURCES +=				\
+	$(BUILT_SRC_DIR)/hjs-marshalers.c	\
+	$(BUILT_INCLUDE_HJS_DIR)/hjs-marshalers.h
+
+EXTRA_DIST += 	\
+	src/lib/hjs/marshalers.list

@@ -1,0 +1,145 @@
+TESTS += $(wildcard $(top_srcdir)/test/lib/*.sh)
+EXTRA_DIST += $(wildcard $(top_srcdir)/test/lib/*.sh)
+EXTRA_DIST += $(wildcard $(top_srcdir)/test/lib/*.js)
+
+DEPEND_ON_HRT=					\
+	test-args				\
+	test-buffer				\
+	test-idle				\
+	test-immediate				\
+	test-io					\
+	test-io-scheduling			\
+	test-log				\
+	test-runner-shutdown			\
+	test-subtask				\
+	test-thread-local			\
+	test-thread-pool
+
+DEPEND_ON_HIO=					\
+	test-http				\
+	test-output				\
+	test-server
+
+DEPEND_ON_HJS=			\
+	test-js
+
+check_PROGRAMS +=				\
+	$(DEPEND_ON_HRT)			\
+	$(DEPEND_ON_HIO)			\
+	$(DEPEND_ON_HJS)
+
+HRT_LIB=$(builddir)/libhrt.so.0
+HIO_LIB=$(builddir)/libhio.so.0 $(builddir)/libhrt.so.0
+HJS_LIB=$(builddir)/libhjs.so.0 $(builddir)/libhrt.so.0 $(builddir)/libhwfjs.so
+
+test_idle_CFLAGS = $(TEST_IDLE_CFLAGS)
+test_idle_LDFLAGS = $(AM_LDFLAGS) $(TEST_IDLE_LIBS)
+test_idle_LDADD=$(HRT_LIB)
+
+test_idle_SOURCES =				\
+	test/lib/test-idle.c
+
+test_immediate_CFLAGS = $(TEST_IMMEDIATE_CFLAGS)
+test_immediate_LDFLAGS = $(AM_LDFLAGS) $(TEST_IMMEDIATE_LIBS)
+test_immediate_LDADD=$(HRT_LIB)
+
+test_immediate_SOURCES =				\
+	test/lib/test-immediate.c
+
+test_io_CFLAGS = $(TEST_IO_CFLAGS)
+test_io_LDFLAGS = $(AM_LDFLAGS) $(TEST_IO_LIBS)
+test_io_LDADD=$(HRT_LIB)
+
+test_io_SOURCES =				\
+	test/lib/test-io.c
+
+test_io_scheduling_CFLAGS = $(TEST_IO_SCHEDULING_CFLAGS)
+test_io_scheduling_LDFLAGS = $(AM_LDFLAGS) $(TEST_IO_SCHEDULING_LIBS)
+test_io_scheduling_LDADD=$(HRT_LIB)
+
+test_io_scheduling_SOURCES =				\
+	test/lib/test-io-scheduling.c
+
+test_log_CFLAGS = $(TEST_LOG_CFLAGS)
+test_log_LDFLAGS = $(AM_LDFLAGS) $(TEST_LOG_LIBS)
+
+test_log_SOURCES =				\
+	test/lib/test-log.c			\
+	src/lib/hrt/hrt-log.c			\
+	src/lib/hrt/hrt-log.h
+
+test_output_CFLAGS = $(TEST_OUTPUT_CFLAGS)
+test_output_LDFLAGS = $(AM_LDFLAGS) $(TEST_OUTPUT_LIBS)
+test_output_LDADD = $(HIO_LIB)
+
+test_output_SOURCES =				\
+	test/lib/test-output.c
+
+test_server_CFLAGS = $(TEST_SERVER_CFLAGS)
+test_server_LDFLAGS = $(AM_LDFLAGS) $(TEST_SERVER_LIBS)
+test_server_LDADD = $(HIO_LIB)
+
+test_server_SOURCES =				\
+	test/lib/test-server.c
+
+test_js_CFLAGS = $(TEST_JS_CFLAGS) $(SPIDERMONKEY_INCLUDE_FLAGS)
+test_js_LDFLAGS = $(AM_LDFLAGS) $(TEST_JS_LIBS)
+test_js_LDADD=$(HJS_LIB)
+
+test_js_SOURCES =				\
+	test/lib/test-js.c
+
+test_args_CFLAGS = $(TEST_ARGS_CFLAGS)
+test_args_LDFLAGS = $(AM_LDFLAGS) $(TEST_ARGS_LIBS)
+test_args_LDADD=$(HRT_LIB)
+
+test_args_SOURCES =				\
+	test/lib/test-args.c
+
+test_buffer_CFLAGS = $(TEST_BUFFER_CFLAGS)
+test_buffer_LDFLAGS = $(AM_LDFLAGS) $(TEST_BUFFER_LIBS)
+test_buffer_LDADD=$(HRT_LIB)
+
+test_buffer_SOURCES =				\
+	test/lib/test-buffer.c
+
+test_http_CFLAGS = $(TEST_HTTP_CFLAGS)
+test_http_LDFLAGS = $(AM_LDFLAGS) $(TEST_HTTP_LIBS)
+test_http_LDADD = $(HIO_LIB)
+
+test_http_SOURCES =				\
+	test/lib/test-http.c
+
+test_subtask_CFLAGS = $(TEST_SUBTASK_CFLAGS)
+test_subtask_LDFLAGS = $(AM_LDFLAGS) $(TEST_SUBTASK_LIBS)
+test_subtask_LDADD=$(HRT_LIB)
+
+test_subtask_SOURCES =				\
+	test/lib/test-subtask.c
+
+test_runner_shutdown_CFLAGS = $(TEST_RUNNER_SHUTDOWN_CFLAGS)
+test_runner_shutdown_LDFLAGS = $(AM_LDFLAGS) $(TEST_RUNNER_SHUTDOWN_LIBS)
+test_runner_shutdown_LDADD=$(HRT_LIB)
+
+test_runner_shutdown_SOURCES =				\
+	test/lib/test-runner-shutdown.c
+
+test_thread_local_CFLAGS = $(TEST_THREAD_LOCAL_CFLAGS)
+test_thread_local_LDFLAGS = $(AM_LDFLAGS) $(TEST_THREAD_LOCAL_LIBS)
+
+test_thread_local_SOURCES =			\
+	test/lib/test-thread-local.c		\
+	src/lib/hrt/hrt-log.c			\
+	src/lib/hrt/hrt-log.h			\
+	src/lib/hrt/hrt-task-thread-local.c		\
+	src/lib/hrt/hrt-task-thread-local.h
+
+test_thread_pool_CFLAGS = $(TEST_THREAD_POOL_CFLAGS)
+test_thread_pool_LDFLAGS = $(AM_LDFLAGS) $(TEST_THREAD_POOL_LIBS)
+
+test_thread_pool_SOURCES =			\
+	test/lib/test-thread-pool.c		\
+	src/lib/hrt/hrt-log.c			\
+	src/lib/hrt/hrt-log.h			\
+	src/lib/hrt/hrt-thread-pool.c		\
+	src/lib/hrt/hrt-thread-pool.h

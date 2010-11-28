@@ -1,0 +1,24 @@
+SPIDERMONKEY_INCLUDE_FLAGS =			\
+	-I $(top_srcdir)/deps/spidermonkey	\
+	-I $(builddir)/build-spidermonkey
+
+SPIDERMONKEY_BUILT_FILES =			\
+	libhwfjs.so				\
+	build-spidermonkey/js-config.h
+
+## hackily pull configure out of the list of files we depend on, since it won't exist if
+## we haven't autoconf'd yet.
+$(SPIDERMONKEY_BUILT_FILES): scripts/build-spidermonkey.sh $(patsubst deps/spidermonkey/configure,,$(ALL_SPIDERMONKEY_FILES))
+	$(AM_V_GEN) $(top_srcdir)/scripts/build-spidermonkey.sh $(srcdir)/deps/spidermonkey $(builddir)
+
+spidermonkey-clean-local:
+	/bin/rm -rf $(builddir)/libhwfjs.so $(builddir)/build-spidermonkey
+
+spidermonkey-all-local: $(SPIDERMONKEY_BUILT_FILES)
+
+include Makefile-spidermonkey-file-list.am
+EXTRA_DIST += \
+	$(ALL_SPIDERMONKEY_FILES)
+
+BUILT_SOURCES +=			\
+	build-spidermonkey/js-config.h

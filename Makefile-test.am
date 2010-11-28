@@ -1,0 +1,30 @@
+TEST_LOGDIR=test_logs
+
+test-logs-clean-local:
+	-$(RM) -rf ${TEST_LOGDIR}
+
+EXTRA_DIST += 								\
+	test/testutil.sh
+
+TESTS_ENVIRONMENT =							\
+	TOP_SRCDIR=$(top_srcdir)					\
+	BUILDDIR=.							\
+	TEST_LOGDIR=$(TEST_LOGDIR)
+
+COVERAGE_REPORT_DIR=coverage
+
+.PHONY: coverage-report
+coverage-report: check ${COVERAGE_REPORT_DIR}/report.txt
+
+## we don't want coverage on trucov itself.
+UNDESIRABLE_COVERAGE= \
+	hwf_trucov*.gc*
+${COVERAGE_REPORT_DIR}/report.txt: hwf-trucov
+	/bin/rm -f ${UNDESIRABLE_COVERAGE} ;						\
+	mkdir -p ${COVERAGE_REPORT_DIR} ;						\
+	./hwf-trucov all_report --builddir=${builddir} --srcdir=${top_srcdir}		\
+		 --output=${COVERAGE_REPORT_DIR} > ${COVERAGE_REPORT_DIR}/report.txt ;	\
+	/bin/rm -f ${UNDESIRABLE_COVERAGE}
+
+coverage-report-clean-local:
+	-$(RM) -rf ${COVERAGE_REPORT_DIR}

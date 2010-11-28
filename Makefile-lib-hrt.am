@@ -1,0 +1,117 @@
+shlib_PROGRAMS += libhrt.so.0.0.0
+nodist_noinst_DATA += libhrt.so.0 libhrt.so
+
+libhrt.so.0 libhrt.so: libhrt.so.0.0.0
+	$(AM_V_GEN) ln -fs libhrt.so.0.0.0 $@
+
+hrt-install-data-hook:
+	ln -fs libhrt.so.0.0.0 $(DESTDIR)$(shlibdir)/libhrt.so.0
+	ln -fs libhrt.so.0.0.0 $(DESTDIR)$(shlibdir)/libhrt.so
+
+hrt-uninstall-hook:
+	rm -f $(DESTDIR)$(shlibdir)/libhrt.so.0
+	rm -f $(DESTDIR)$(shlibdir)/libhrt.so
+
+HRT_NONBUILT_H=					\
+	src/lib/hrt/hrt-buffer.h		\
+	src/lib/hrt/hrt-event-loop-ev.h		\
+	src/lib/hrt/hrt-event-loop-glib.h	\
+	src/lib/hrt/hrt-event-loop.h		\
+	src/lib/hrt/hrt-log.h			\
+	src/lib/hrt/hrt-task.h			\
+	src/lib/hrt/hrt-task-private.h		\
+	src/lib/hrt/hrt-task-runner.h		\
+	src/lib/hrt/hrt-task-thread-local.h	\
+	src/lib/hrt/hrt-thread-pool.h		\
+	src/lib/hrt/hrt-watcher.h
+
+HRT_NONBUILT_C=					\
+	src/lib/hrt/hrt-buffer.c		\
+	src/lib/hrt/hrt-event-loop.c		\
+	src/lib/hrt/hrt-event-loop-ev.c		\
+	src/lib/hrt/hrt-event-loop-glib.c	\
+	src/lib/hrt/hrt-log.c			\
+	src/lib/hrt/hrt-task.c			\
+	src/lib/hrt/hrt-task-runner.c		\
+	src/lib/hrt/hrt-task-thread-local.c	\
+	src/lib/hrt/hrt-thread-pool.c		\
+	src/lib/hrt/hrt-watcher.c
+
+hrtincludedir=$(pkgincludedir)/hrt
+hrtinclude_HEADERS = 					\
+	$(HRT_NONBUILT_H)
+
+nodist_hrtinclude_HEADERS = 				\
+	$(BUILT_INCLUDE_HRT_DIR)/hrt-builtins.h
+
+
+libhrt_so_0_0_0_CFLAGS = $(HRT_CFLAGS)
+libhrt_so_0_0_0_LDFLAGS = $(AM_LDFLAGS) -Wl,-soname=libhrt.so.0 $(HRT_LIBS)
+libhrt_so_0_0_0_SOURCES =				\
+	$(HRT_NONBUILT_H)				\
+	$(HRT_NONBUILT_C)
+
+nodist_libhrt_so_0_0_0_SOURCES =			\
+	$(BUILT_INCLUDE_HRT_DIR)/hrt-marshalers.h	\
+	$(BUILT_SRC_DIR)/hrt-marshalers.c		\
+	$(BUILT_SRC_DIR)/hrt-builtins.c
+
+CLEANFILES +=					\
+	libhrt.so.0				\
+	libhrt.so
+
+################## Builtins
+
+HRT_FILES_TO_ENUM_SCAN = 			\
+	$(HRT_NONBUILT_H)
+
+BUILT_INCLUDE_HRT_DIR=$(BUILT_INCLUDE_DIR)/hrt
+
+$(BUILT_INCLUDE_HRT_DIR)/hrt-builtins.h: $(top_srcdir)/src/lib/hrt/builtins.h.template $(HRT_FILES_TO_ENUM_SCAN)
+	$(AM_V_GEN)															     \
+	test -d $(BUILT_INCLUDE_HRT_DIR) || mkdir -p $(BUILT_INCLUDE_HRT_DIR) ;								     \
+	DIR=`pwd` ;															     \
+	cd $(abs_top_srcdir) ;														     \
+	$(GLIB_MKENUMS) --template src/lib/hrt/builtins.h.template $(HRT_FILES_TO_ENUM_SCAN) > $$DIR/$(BUILT_INCLUDE_HRT_DIR)/hrt-builtins.h
+
+$(BUILT_SRC_DIR)/hrt-builtins.c: $(top_srcdir)/src/lib/hrt/builtins.c.template $(HRT_FILES_TO_ENUM_SCAN)
+	$(AM_V_GEN)														     \
+	test -d $(BUILT_SRC_DIR) || mkdir -p $(BUILT_SRC_DIR) ;									     \
+	DIR=`pwd` ;														     \
+	cd $(abs_top_srcdir) ;													     \
+	$(GLIB_MKENUMS) --template src/lib/hrt/builtins.c.template $(HRT_FILES_TO_ENUM_SCAN) > $$DIR/$(BUILT_SRC_DIR)/hrt-builtins.c
+
+EXTRA_DIST +=					\
+	src/lib/hrt/builtins.h.template		\
+	src/lib/hrt/builtins.c.template
+
+HRT_GENERATED_BUILTINS_FILES =			\
+	$(BUILT_INCLUDE_HRT_DIR)/hrt-builtins.h	\
+	$(BUILT_SRC_DIR)/hrt-builtins.c
+
+BUILT_SOURCES +=				        \
+	$(HRT_GENERATED_BUILTINS_FILES)
+
+CLEANFILES +=					        \
+	$(HRT_GENERATED_BUILTINS_FILES)
+
+################## Marshalers
+
+$(BUILT_SRC_DIR)/hrt-marshalers.c: src/lib/hrt/marshalers.list
+	$(AM_V_GEN)								\
+	test -d $(BUILT_SRC_DIR) || mkdir -p $(BUILT_SRC_DIR) ;			\
+	$(GLIB_GENMARSHAL) $< --prefix=_hrt_marshal --header --body > $@.tmp &&	\
+	mv $@.tmp $@
+
+$(BUILT_INCLUDE_HRT_DIR)/hrt-marshalers.h: src/lib/hrt/marshalers.list
+	$(AM_V_GEN)								\
+	test -d $(BUILT_INCLUDE_HRT_DIR) || mkdir -p $(BUILT_INCLUDE_HRT_DIR) ;		\
+	$(GLIB_GENMARSHAL) $< --prefix=_hrt_marshal --header > $@.tmp &&	\
+	mv $@.tmp $@
+
+BUILT_SOURCES +=				\
+	$(BUILT_SRC_DIR)/hrt-marshalers.c	\
+	$(BUILT_INCLUDE_HRT_DIR)/hrt-marshalers.h
+
+EXTRA_DIST += 	\
+	src/lib/hrt/marshalers.list

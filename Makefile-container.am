@@ -1,0 +1,20 @@
+bin_PROGRAMS += 				\
+	hwf-container
+
+hwf_container_CPPFLAGS = $(AM_CPPFLAGS) -I$(top_srcdir)/src
+hwf_container_CFLAGS = $(CONTAINER_CFLAGS) $(SPIDERMONKEY_INCLUDE_FLAGS)
+hwf_container_LDFLAGS = $(AM_LDFLAGS) $(CONTAINER_LIBS)
+hwf_container_LDADD =				\
+	$(builddir)/libhjs.so.0			\
+	$(builddir)/libhio.so.0			\
+	$(builddir)/libhrt.so.0			\
+	$(builddir)/libhwfjs.so
+
+hwf_container_SOURCES =					\
+	src/container/container.c			\
+	src/container/container.h			\
+	src/container/hwf-connection-container.c	\
+	src/container/hwf-connection-container.h	\
+	src/container/hwf-request-container.c		\
+	src/container/hwf-request-container.h		\
+	src/container/main.c

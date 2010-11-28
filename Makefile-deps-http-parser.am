@@ -1,0 +1,6 @@
+EXTRA_DIST +=					\
+	deps/http-parser/http_parser.c		\
+	deps/http-parser/http_parser.h		\
+	deps/http-parser/LICENSE-MIT		\
+	deps/http-parser/README.md		\
+	deps/http-parser/test.c

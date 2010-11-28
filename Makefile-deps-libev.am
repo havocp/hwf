@@ -1,0 +1,13 @@
+## ev.c includes everything else, and we include ev.c in
+## another file, so none of these are actually listed
+## in any SOURCES
+
+EXTRA_DIST +=					\
+	deps/libev/ev_epoll.c			\
+	deps/libev/ev_poll.c			\
+	deps/libev/ev.c				\
+	deps/libev/ev.h				\
+	deps/libev/ev_vars.h			\
+	deps/libev/ev_wrap.h			\
+	deps/libev/ev_select.c			\
+	deps/libev/libev.m4

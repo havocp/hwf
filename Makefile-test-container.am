@@ -1,0 +1,4 @@
+TESTS += $(wildcard $(top_srcdir)/test/container/*.sh)
+EXTRA_DIST += $(wildcard $(top_srcdir)/test/container/*.sh)
+
+check_PROGRAMS += hwf-container

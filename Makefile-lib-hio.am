@@ -1,0 +1,119 @@
+shlib_PROGRAMS += libhio.so.0.0.0
+nodist_noinst_DATA += libhio.so.0 libhio.so
+
+libhio.so.0 libhio.so: libhio.so.0.0.0
+	$(AM_V_GEN) ln -fs libhio.so.0.0.0 $@
+
+hio-install-data-hook:
+	ln -fs libhio.so.0.0.0 $(DESTDIR)$(shlibdir)/libhio.so.0
+	ln -fs libhio.so.0.0.0 $(DESTDIR)$(shlibdir)/libhio.so
+
+hio-uninstall-hook:
+	rm -f $(DESTDIR)$(shlibdir)/libhio.so.0
+	rm -f $(DESTDIR)$(shlibdir)/libhio.so
+
+HIO_NONBUILT_H=					\
+	src/lib/hio/hio-connection.h		\
+	src/lib/hio/hio-connection-http.h	\
+	src/lib/hio/hio-incoming.h		\
+	src/lib/hio/hio-message.h		\
+	src/lib/hio/hio-outgoing.h		\
+	src/lib/hio/hio-output-chain.h		\
+	src/lib/hio/hio-output-stream.h		\
+	src/lib/hio/hio-request-http.h		\
+	src/lib/hio/hio-response-http.h		\
+	src/lib/hio/hio-server.h
+
+HIO_NONBUILT_C=					\
+        deps/http-parser/http_parser.c          \
+        deps/http-parser/http_parser.h          \
+	src/lib/hio/hio-connection.c		\
+	src/lib/hio/hio-connection-http.c	\
+	src/lib/hio/hio-incoming.c		\
+	src/lib/hio/hio-message.c		\
+	src/lib/hio/hio-outgoing.c		\
+	src/lib/hio/hio-output-chain.c		\
+	src/lib/hio/hio-output-stream.c		\
+	src/lib/hio/hio-request-http.c		\
+	src/lib/hio/hio-response-http.c		\
+	src/lib/hio/hio-server.c
+
+hioincludedir=$(pkgincludedir)/hio
+hioinclude_HEADERS = 					\
+	$(HIO_NONBUILT_H)
+
+nodist_hioinclude_HEADERS = 					\
+	$(BUILT_INCLUDE_HIO_DIR)/hio-builtins.h
+
+
+libhio_so_0_0_0_CFLAGS = $(HIO_CFLAGS)
+libhio_so_0_0_0_LDFLAGS = $(AM_LDFLAGS) -Wl,-soname=libhio.so.0 $(HIO_LIBS)
+libhio_so_0_0_0_LDADD = $(builddir)/libhrt.so.0
+libhio_so_0_0_0_SOURCES =				\
+	$(HIO_NONBUILT_H)				\
+	$(HIO_NONBUILT_C)
+
+nodist_libhio_so_0_0_0_SOURCES =			\
+	$(BUILT_INCLUDE_HIO_DIR)/hio-marshalers.h	\
+	$(BUILT_SRC_DIR)/hio-marshalers.c		\
+	$(BUILT_SRC_DIR)/hio-builtins.c
+
+CLEANFILES +=					\
+	libhio.so.0				\
+	libhio.so
+
+################## Builtins
+
+HIO_FILES_TO_ENUM_SCAN = 			\
+	$(HIO_NONBUILT_H)
+
+BUILT_INCLUDE_HIO_DIR=$(BUILT_INCLUDE_DIR)/hio
+
+$(BUILT_INCLUDE_HIO_DIR)/hio-builtins.h: $(top_srcdir)/src/lib/hio/builtins.h.template $(HIO_FILES_TO_ENUM_SCAN)
+	$(AM_V_GEN)															     \
+	test -d $(BUILT_INCLUDE_HIO_DIR) || mkdir -p $(BUILT_INCLUDE_HIO_DIR) ;								     \
+	DIR=`pwd` ;															     \
+	cd $(abs_top_srcdir) ;														     \
+	$(GLIB_MKENUMS) --template src/lib/hio/builtins.h.template $(HIO_FILES_TO_ENUM_SCAN) > $$DIR/$(BUILT_INCLUDE_HIO_DIR)/hio-builtins.h
+
+$(BUILT_SRC_DIR)/hio-builtins.c: $(top_srcdir)/src/lib/hio/builtins.c.template $(HIO_FILES_TO_ENUM_SCAN)
+	$(AM_V_GEN)														     \
+	test -d $(BUILT_SRC_DIR) || mkdir -p $(BUILT_SRC_DIR) ;									     \
+	DIR=`pwd` ;														     \
+	cd $(abs_top_srcdir) ;													     \
+	$(GLIB_MKENUMS) --template src/lib/hio/builtins.c.template $(HIO_FILES_TO_ENUM_SCAN) > $$DIR/$(BUILT_SRC_DIR)/hio-builtins.c
+
+EXTRA_DIST +=					\
+	src/lib/hio/builtins.h.template		\
+	src/lib/hio/builtins.c.template
+
+HIO_GENERATED_BUILTINS_FILES =			\
+	$(BUILT_INCLUDE_HIO_DIR)/hio-builtins.h	\
+	$(BUILT_SRC_DIR)/hio-builtins.c
+
+BUILT_SOURCES +=				        \
+	$(HIO_GENERATED_BUILTINS_FILES)
+
+CLEANFILES +=					        \
+	$(HIO_GENERATED_BUILTINS_FILES)
+
+################## Marshalers
+
+$(BUILT_SRC_DIR)/hio-marshalers.c: src/lib/hio/marshalers.list
+	$(AM_V_GEN)								\
+	test -d $(BUILT_SRC_DIR) || mkdir -p $(BUILT_SRC_DIR) ;			\
+	$(GLIB_GENMARSHAL) $< --prefix=_hio_marshal --header --body > $@.tmp &&	\
+	mv $@.tmp $@
+
+$(BUILT_INCLUDE_HIO_DIR)/hio-marshalers.h: src/lib/hio/marshalers.list
+	$(AM_V_GEN)								\
+	test -d $(BUILT_INCLUDE_HIO_DIR) || mkdir -p $(BUILT_INCLUDE_HIO_DIR) ;		\
+	$(GLIB_GENMARSHAL) $< --prefix=_hio_marshal --header > $@.tmp &&	\
+	mv $@.tmp $@
+
+BUILT_SOURCES +=				\
+	$(BUILT_SRC_DIR)/hio-marshalers.c	\
+	$(BUILT_INCLUDE_HIO_DIR)/hio-marshalers.h
+
+EXTRA_DIST += 	\
+	src/lib/hio/marshalers.list
