@@ -23,12 +23,11 @@ NEW_TYPE=$OLD_TYPE
 function rename_in() {
     FILE=$1
 
-    cat "$FILE" |                                                                       \
-        sed -e "s/$OLD_Ns$OLD_Type/$NEW_Ns$NEW_Type/g" |                                \
-        sed -e "s/${OLD_ns}_$OLD_type/${NEW_ns}_$NEW_type/g" |                          \
-        sed -e "s/${OLD_NS}_$OLD_TYPE/${NEW_NS}_$NEW_TYPE/g" |                          \
-        sed -e "s/${OLD_NS}_TYPE_$OLD_TYPE/${NEW_NS}_TYPE_$NEW_TYPE/g" |                \
-        sed -e "s/${OLD_NS}_IS_$OLD_TYPE/${NEW_NS}_IS_$NEW_TYPE/g" > "$FILE".renamed
+    sed -e "s/$OLD_Ns$OLD_Type/$NEW_Ns$NEW_Type/g"                                  \
+        -e "s/${OLD_ns}_$OLD_type/${NEW_ns}_$NEW_type/g"                            \
+        -e "s/${OLD_NS}_$OLD_TYPE/${NEW_NS}_$NEW_TYPE/g"                            \
+        -e "s/${OLD_NS}_TYPE_$OLD_TYPE/${NEW_NS}_TYPE_$NEW_TYPE/g"                  \
+        -e "s/${OLD_NS}_IS_$OLD_TYPE/${NEW_NS}_IS_$NEW_TYPE/g" "$FILE" > "$FILE".renamed
 
     if ! diff 1>/dev/null "$FILE" "$FILE".renamed ; then
         "$WHERE"/reindent-file.sh "$FILE".renamed
